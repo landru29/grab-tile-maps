@@ -3,7 +3,8 @@
 Grab all tiles of a map
 
 ## Build
-```
+
+``` bash
     go get
     go build
     ./grab-tile-maps --help
