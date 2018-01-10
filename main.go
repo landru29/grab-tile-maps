@@ -16,23 +16,17 @@ var mainCommand = &cobra.Command{
 
 		urlChannel := make(chan maploader.URL)
 
-		fmt.Printf("Building URLs ...\n")
-		urls := maploader.BuildUrls(
-			viper.GetString("url_scheme"),
-			fmt.Sprintf("%s/%s", viper.GetString("out_folder"), viper.GetString("out_scheme")),
-			viper.GetInt("zoom_min"),
-			viper.GetInt("zoom_max"),
-		)
-
-		fmt.Printf("%d urls to download\n", len(urls))
-
 		for i := 0; i < viper.GetInt("download_agent"); i++ {
 			go maploader.Worker(i, urlChannel)
 		}
 
-		for _, url := range urls {
-			urlChannel <- url
-		}
+		maploader.QueueUrls(
+			viper.GetString("url_scheme"),
+			fmt.Sprintf("%s/%s", viper.GetString("out_folder"), viper.GetString("out_scheme")),
+			viper.GetInt("zoom_min"),
+			viper.GetInt("zoom_max"),
+			urlChannel,
+		)
 
 		close(urlChannel)
 	},
